@@ -106,27 +106,29 @@ speeds=run_sim()
 fig,ax=plt.subplots()
 plt.subplots_adjust(bottom=0.3)
 (line,)=plt.plot(speeds,label="Speed (rad/s)")
-plt.axhline(100,color='r',ls='--',label="Target=100")
+target_line = ax.axhline(100, color='r', ls='--', label="Target")
 plt.legend()
 ax.set_xlabel("Step"); ax.set_ylabel("rad/s")
 
 # Slider areas
 ax_ref=plt.axes([0.25,0.15,0.65,0.03])
 ax_gain=plt.axes([0.25,0.1,0.65,0.03])
-s_ref=Slider(ax_ref,"Ref Speed",20,140,valinit=100)
-s_gain=Slider(ax_gain,"Gain",0.01,0.2,valinit=0.05)
+s_ref = Slider(ax_ref, "Ref Speed", 20, 140, valinit=100, valstep=5)
+s_gain = Slider(ax_gain,"Gain",0.01,0.2,valinit=0.05,  valstep=0.01)
 
 # Update function
-def update(val):
-    speeds=run_sim(s_ref.val,s_gain.val)
-    line.set_ydata(speeds)
-    ax.relim(); ax.autoscale_view()
-    fig.canvas.draw_idle()
 
 def update_after_release(event):
     if event.name == "button_release_event":
+
         speeds = run_sim(s_ref.val, s_gain.val)
         line.set_ydata(speeds)
+        
+        target_line.set_ydata([s_ref.val, s_ref.val])
+
+        target_line.set_label(f"Target={s_ref.val}")
+        ax.legend()
+        
         ax.relim(); ax.autoscale_view()
         fig.canvas.draw_idle()
 
